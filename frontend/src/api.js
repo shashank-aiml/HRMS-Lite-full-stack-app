@@ -40,7 +40,7 @@ async function request(path, options = {}) {
     const isNetworkError = /failed to fetch|networkerror|load failed/i.test(msg)
     if (isNetworkError) {
       throw new Error(
-        'Cannot reach the backend. In Railway → Variables, set CORS_ORIGINS to your Netlify URL (e.g. https://silly-cranachan-7ca8e7.netlify.app), then redeploy. Also check the backend is running.'
+        'Cannot reach the backend. In Railway → Variables, set CORS_ORIGINS to your frontend URL (copy from the browser address bar: e.g. https://your-app.vercel.app or https://your-site.netlify.app), then redeploy. Also check the backend is running.'
       )
     }
     throw new Error(msg || 'Cannot reach server. Check VITE_API_BASE_URL and CORS.')
