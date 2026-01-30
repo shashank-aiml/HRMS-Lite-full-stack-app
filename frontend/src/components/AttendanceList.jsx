@@ -1,7 +1,8 @@
 import styles from './Table.module.css'
 
 export default function AttendanceList({ records }) {
-  if (!records.length) return null
+  const list = Array.isArray(records) ? records : []
+  if (!list.length) return null
 
   return (
     <div className={styles.wrapper}>
@@ -14,7 +15,7 @@ export default function AttendanceList({ records }) {
           </tr>
         </thead>
         <tbody>
-          {records.map((r) => (
+          {list.map((r) => (
             <tr key={r.id}>
               <td>{r.employee_id}</td>
               <td>{r.date}</td>

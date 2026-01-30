@@ -53,7 +53,7 @@ export default function DashboardPage() {
       </div>
 
       <Card title="Present Days per Employee" className={styles.tableCard}>
-        {present_days_per_employee.length === 0 ? (
+        {!present_days_per_employee.length ? (
           <p className={styles.empty}>No employees yet. Add employees to see present days.</p>
         ) : (
           <div className={styles.tableWrap}>

@@ -4,7 +4,8 @@ import styles from './Form.module.css'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
-export default function AttendanceForm({ employees, onSubmit, loading }) {
+export default function AttendanceForm({ employees = [], onSubmit, loading }) {
+  const list = Array.isArray(employees) ? employees : []
   const [employeeId, setEmployeeId] = useState('')
   const [date, setDate] = useState(today())
   const [status, setStatus] = useState('Present')
@@ -73,7 +74,7 @@ export default function AttendanceForm({ employees, onSubmit, loading }) {
         </div>
       </div>
       {error && <p className={styles.error}>{error}</p>}
-      <Button type="submit" disabled={loading || employees.length === 0}>
+      <Button type="submit" disabled={loading || list.length === 0}>
         {loading ? 'Saving...' : 'Mark Attendance'}
       </Button>
     </form>

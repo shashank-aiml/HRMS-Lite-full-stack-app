@@ -20,7 +20,7 @@ export default function EmployeesPage() {
     setLoading(true)
     employeesApi
       .list()
-      .then(setEmployees)
+      .then((data) => setEmployees(Array.isArray(data) ? data : []))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
   }
@@ -58,14 +58,14 @@ export default function EmployeesPage() {
         <Card title="All Employees">
           {loading && <Loading message="Loading employees..." />}
           {error && <ErrorMessage message={error} onRetry={fetchEmployees} />}
-          {!loading && !error && employees.length === 0 && (
+          {!loading && !error && (!employees || employees.length === 0) && (
             <EmptyState
               icon="👥"
               title="No employees yet"
               description="Add your first employee using the form above."
             />
           )}
-          {!loading && !error && employees.length > 0 && (
+          {!loading && !error && employees?.length > 0 && (
             <EmployeeList
               employees={employees}
               onDelete={handleDelete}

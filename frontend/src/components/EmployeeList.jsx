@@ -2,7 +2,8 @@ import Button from './Button'
 import styles from './Table.module.css'
 
 export default function EmployeeList({ employees, onDelete, deletingId }) {
-  if (!employees.length) return null
+  const list = Array.isArray(employees) ? employees : []
+  if (!list.length) return null
 
   return (
     <div className={styles.wrapper}>
@@ -17,7 +18,7 @@ export default function EmployeeList({ employees, onDelete, deletingId }) {
           </tr>
         </thead>
         <tbody>
-          {employees.map((emp) => (
+          {list.map((emp) => (
             <tr key={emp.id}>
               <td>{emp.employee_id}</td>
               <td>{emp.full_name}</td>

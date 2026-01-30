@@ -1,6 +1,13 @@
 // In production (Netlify), set VITE_API_BASE_URL to your Railway backend URL (e.g. https://your-app.railway.app)
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
 
+// In production we must have API_BASE set, or requests go to the frontend origin (wrong)
+if (import.meta.env.PROD && !API_BASE) {
+  console.error(
+    'VITE_API_BASE_URL is not set. Set it in Netlify Environment variables to your Railway backend URL and redeploy.'
+  )
+}
+
 function getMessage(res, data) {
   if (Array.isArray(data?.detail)) {
     return data.detail.map((e) => e.msg || e.message).join(', ');
@@ -22,9 +29,15 @@ function getMessage(res, data) {
 }
 
 async function request(path, options = {}) {
-  const url = API_BASE ? `${API_BASE}${path}` : path;
+  const url = API_BASE ? `${API_BASE}${path}` : path
 
-  let res;
+  if (import.meta.env.PROD && !API_BASE) {
+    throw new Error(
+      'API URL not configured. In Netlify, set VITE_API_BASE_URL to your Railway backend URL (e.g. https://your-app.railway.app), then redeploy.'
+    )
+  }
+
+  let res
   try {
     res = await fetch(url, {
       headers: {
@@ -32,18 +45,30 @@ async function request(path, options = {}) {
         ...(options.headers || {}),
       },
       ...options,
-    });
+    })
   } catch (err) {
-    throw new Error('Failed to fetch. Is the backend running?');
+    throw new Error(
+      err.message ||
+        'Cannot reach server. Check that VITE_API_BASE_URL points to your Railway backend and CORS allows this site.'
+    )
   }
 
-  const data = await res.json().catch(() => ({}));
+  const contentType = res.headers.get('content-type') || ''
+  const isJson = contentType.includes('application/json')
+  const data = isJson ? await res.json().catch(() => ({})) : {}
 
   if (!res.ok) {
-    throw new Error(getMessage(res, data));
+    throw new Error(getMessage(res, data))
   }
 
-  return data;
+  // If we got HTML (e.g. SPA fallback from wrong origin), treat as error
+  if (!isJson && res.ok) {
+    throw new Error(
+      'Server returned non-JSON. Check that VITE_API_BASE_URL points to your backend (e.g. Railway), not to this site.'
+    )
+  }
+
+  return data
 }
 
 export const employeesApi = {

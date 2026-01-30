@@ -26,7 +26,7 @@ export default function AttendancePage() {
     setLoadingEmployees(true)
     employeesApi
       .list()
-      .then(setEmployees)
+      .then((data) => setEmployees(Array.isArray(data) ? data : []))
       .catch((err) => setErrorEmployees(err.message))
       .finally(() => setLoadingEmployees(false))
   }
@@ -57,7 +57,7 @@ export default function AttendancePage() {
       .finally(() => setMarking(false))
   }
 
-  const displayAttendance = attendance
+  const displayAttendance = Array.isArray(attendance) ? attendance : []
   const hasRecords = displayAttendance.length > 0
 
   return (
@@ -79,7 +79,7 @@ export default function AttendancePage() {
               loading={marking}
             />
           )}
-          {!loadingEmployees && !errorEmployees && employees.length === 0 && (
+          {!loadingEmployees && !errorEmployees && (!employees || employees.length === 0) && (
             <p className={styles.hint}>
               Add employees from the Employees page first.
             </p>
