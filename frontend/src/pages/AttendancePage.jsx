@@ -13,8 +13,6 @@ export default function AttendancePage() {
   const [employees, setEmployees] = useState([])
   const [attendance, setAttendance] = useState([])
   const [filterEmployeeId, setFilterEmployeeId] = useState('')
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
   const [loadingEmployees, setLoadingEmployees] = useState(true)
   const [loadingAttendance, setLoadingAttendance] = useState(true)
   const [errorEmployees, setErrorEmployees] = useState(null)
@@ -36,7 +34,7 @@ export default function AttendancePage() {
     setLoadingAttendance(true)
     attendanceApi
       .list(filterEmployeeId || undefined)
-      .then(setAttendance)
+      .then((data) => setAttendance(Array.isArray(data) ? data : []))
       .catch((err) => setErrorAttendance(err.message))
       .finally(() => setLoadingAttendance(false))
   }
@@ -89,37 +87,19 @@ export default function AttendancePage() {
         <Card title="Attendance Records">
           <div className={styles.filters}>
             <div className={styles.filter}>
-              <label htmlFor="filterEmp">Employee</label>
+              <label htmlFor="filterEmp">Filter by employee</label>
               <select
                 id="filterEmp"
                 value={filterEmployeeId}
                 onChange={(e) => setFilterEmployeeId(e.target.value)}
               >
                 <option value="">All employees</option>
-                {employees.map((emp) => (
+                {(Array.isArray(employees) ? employees : []).map((emp) => (
                   <option key={emp.id} value={emp.employee_id}>
                     {emp.employee_id} – {emp.full_name}
                   </option>
                 ))}
               </select>
-            </div>
-            <div className={styles.filter}>
-              <label htmlFor="startDate">From date</label>
-              <input
-                id="startDate"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-            </div>
-            <div className={styles.filter}>
-              <label htmlFor="endDate">To date</label>
-              <input
-                id="endDate"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
             </div>
           </div>
 

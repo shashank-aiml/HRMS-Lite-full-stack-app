@@ -92,22 +92,12 @@ export const employeesApi = {
 };
 
 export const attendanceApi = {
-  list: ({ employeeId, startDate, endDate } = {}) => {
-    const params = new URLSearchParams();
-    if (employeeId) params.set('employee_id', employeeId);
-    if (startDate) params.set('start_date', startDate);
-    if (endDate) params.set('end_date', endDate);
-    const qs = params.toString();
-    return request(qs ? `/api/attendance?${qs}` : '/api/attendance');
-  },
+  list: (employeeId) =>
+    request(employeeId ? `/api/attendance?employee_id=${encodeURIComponent(employeeId)}` : '/api/attendance'),
 
   mark: (body) =>
     request('/api/attendance', {
       method: 'POST',
       body: JSON.stringify(body),
     }),
-};
-
-export const dashboardApi = {
-  get: () => request('/api/dashboard'),
 };

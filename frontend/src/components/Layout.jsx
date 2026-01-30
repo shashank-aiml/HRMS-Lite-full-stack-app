@@ -11,13 +11,6 @@ export default function Layout({ children }) {
         </div>
         <nav className={styles.nav}>
           <NavLink
-            to="/dashboard"
-            className={({ isActive }) => (isActive ? styles.navLinkActive : styles.navLink)}
-            end
-          >
-            Dashboard
-          </NavLink>
-          <NavLink
             to="/employees"
             className={({ isActive }) => (isActive ? styles.navLinkActive : styles.navLink)}
             end

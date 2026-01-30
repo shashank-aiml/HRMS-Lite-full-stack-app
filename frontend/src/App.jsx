@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
-import DashboardPage from './pages/DashboardPage'
 import EmployeesPage from './pages/EmployeesPage'
 import AttendancePage from './pages/AttendancePage'
 
@@ -9,8 +8,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/" element={<EmployeesPage />} />
           <Route path="/employees" element={<EmployeesPage />} />
           <Route path="/attendance" element={<AttendancePage />} />
         </Route>
