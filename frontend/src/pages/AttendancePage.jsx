@@ -45,7 +45,7 @@ export default function AttendancePage() {
 
   useEffect(() => {
     fetchAttendance()
-  }, [filterEmployeeId, startDate, endDate])
+  }, [filterEmployeeId])
 
   const handleMarkAttendance = (data) => {
     setMarking(true)
