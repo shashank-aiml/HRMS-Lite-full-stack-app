@@ -47,10 +47,14 @@ async function request(path, options = {}) {
       ...options,
     })
   } catch (err) {
-    throw new Error(
-      err.message ||
-        'Cannot reach server. Check that VITE_API_BASE_URL points to your Railway backend and CORS allows this site.'
-    )
+    const msg = (err && err.message) || ''
+    const isNetworkError = /failed to fetch|networkerror|load failed/i.test(msg)
+    if (isNetworkError) {
+      throw new Error(
+        'Cannot reach the backend. Check: (1) VITE_API_BASE_URL in Netlify points to your Railway URL, (2) Railway backend is running, (3) CORS_ORIGINS in Railway includes your Netlify site URL (e.g. https://your-site.netlify.app).'
+      )
+    }
+    throw new Error(msg || 'Cannot reach server. Check VITE_API_BASE_URL and CORS.')
   }
 
   const contentType = res.headers.get('content-type') || ''
@@ -63,9 +67,10 @@ async function request(path, options = {}) {
 
   // If we got HTML (e.g. SPA fallback from wrong origin), treat as error
   if (!isJson && res.ok) {
-    throw new Error(
-      'Server returned non-JSON. Check that VITE_API_BASE_URL points to your backend (e.g. Railway), not to this site.'
-    )
+    const hint = !API_BASE
+      ? 'VITE_API_BASE_URL is not set. Set it in Netlify → Site configuration → Environment variables to your Railway backend URL (e.g. https://your-app.railway.app), then trigger a new deploy.'
+      : 'The request may be going to the wrong URL. In Netlify, set VITE_API_BASE_URL to your Railway backend URL only (no trailing slash), then trigger a new deploy so the build picks it up.'
+    throw new Error(`Server returned non-JSON. ${hint}`)
   }
 
   return data
