@@ -1,4 +1,5 @@
-const API_BASE = '';
+// In production (Netlify), set VITE_API_BASE_URL to your Railway backend URL (e.g. https://your-app.railway.app)
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
 
 function getMessage(res, data) {
   if (Array.isArray(data?.detail)) {
@@ -21,7 +22,7 @@ function getMessage(res, data) {
 }
 
 async function request(path, options = {}) {
-  const url = `${API_BASE}${path}`;
+  const url = API_BASE ? `${API_BASE}${path}` : path;
 
   let res;
   try {
