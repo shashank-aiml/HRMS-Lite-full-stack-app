@@ -1,12 +1,7 @@
-// In production (Netlify), set VITE_API_BASE_URL to your Railway backend URL (e.g. https://your-app.railway.app)
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
-
-// In production we must have API_BASE set, or requests go to the frontend origin (wrong)
-if (import.meta.env.PROD && !API_BASE) {
-  console.error(
-    'VITE_API_BASE_URL is not set. Set it in Netlify Environment variables to your Railway backend URL and redeploy.'
-  )
-}
+// In production: use env var if set, otherwise fallback to deployed Railway backend URL
+const FALLBACK_API_BASE = 'https://hrms-lite-full-stack-app-production.up.railway.app'
+const raw = import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? FALLBACK_API_BASE : '')
+const API_BASE = (raw || '').replace(/\/$/, '')
 
 function getMessage(res, data) {
   if (Array.isArray(data?.detail)) {
@@ -31,12 +26,6 @@ function getMessage(res, data) {
 async function request(path, options = {}) {
   const url = API_BASE ? `${API_BASE}${path}` : path
 
-  if (import.meta.env.PROD && !API_BASE) {
-    throw new Error(
-      'API URL not configured. In Netlify, set VITE_API_BASE_URL to your Railway backend URL (e.g. https://your-app.railway.app), then redeploy.'
-    )
-  }
-
   let res
   try {
     res = await fetch(url, {
@@ -51,7 +40,7 @@ async function request(path, options = {}) {
     const isNetworkError = /failed to fetch|networkerror|load failed/i.test(msg)
     if (isNetworkError) {
       throw new Error(
-        'Cannot reach the backend. Check: (1) VITE_API_BASE_URL in Netlify points to your Railway URL, (2) Railway backend is running, (3) CORS_ORIGINS in Railway includes your Netlify site URL (e.g. https://your-site.netlify.app).'
+        'Cannot reach the backend. In Railway → Variables, set CORS_ORIGINS to your Netlify URL (e.g. https://silly-cranachan-7ca8e7.netlify.app), then redeploy. Also check the backend is running.'
       )
     }
     throw new Error(msg || 'Cannot reach server. Check VITE_API_BASE_URL and CORS.')
